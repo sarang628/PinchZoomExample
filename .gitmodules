@@ -1,0 +1,3 @@
+[submodule "app/src/main/java/com/example/pinchzoom/library/pinchzoom"]
+	path = app/src/main/java/com/example/pinchzoom/library/pinchzoom
+	url = https://github.com/sarang628/pinchzoom.git
