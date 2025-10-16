@@ -22,6 +22,7 @@ import coil.compose.AsyncImage
 import com.example.pinchzoom.ui.theme.PinchZoomTheme
 import com.sarang.torang.di.pinchzoom.ImageLoader
 import com.sarang.torang.di.pinchzoom.PinchZoomImageBox
+import com.sarang.torang.di.pinchzoom.PinchZoomableImageData
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,11 +54,13 @@ fun PinchZoomExample() {
                             fontSize = 30.sp
                         )
                         pinchZoomableImage.invoke(
-                            Modifier
-                                .height(imageSize),
-                            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhkYTY17vrtw3-dlooIu9n7R7mYFgOwyiCwEtJiFJTuxk4sOCKJ-OVaftSPKX7CfONCn2AMMV70TNP9qfo5avZBaMBn4BGS5DW6wPlbRY2ZZRgBXMEI5HbzduVdwj790uDattXfmQtkE8JJ_OptUUDFpCdJZWKVO_mOuL408H4svVQlt58TcjQe8JWfC5g/s1600/app-quality-performance-play-console-insights-meta.png",
-                            ContentScale.Crop,
-                            imageSize
+                            PinchZoomableImageData(
+                                modifier = Modifier
+                                    .height(imageSize),
+                                url = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhkYTY17vrtw3-dlooIu9n7R7mYFgOwyiCwEtJiFJTuxk4sOCKJ-OVaftSPKX7CfONCn2AMMV70TNP9qfo5avZBaMBn4BGS5DW6wPlbRY2ZZRgBXMEI5HbzduVdwj790uDattXfmQtkE8JJ_OptUUDFpCdJZWKVO_mOuL408H4svVQlt58TcjQe8JWfC5g/s1600/app-quality-performance-play-console-insights-meta.png",
+                                contentScale = ContentScale.Crop,
+                                originHeight = imageSize
+                            )
                         )
                     }
                 }
@@ -71,12 +74,12 @@ fun PinchZoomExample() {
  * 핀치줌 라이브라리 제공용 이미지 로더
  */
 fun coilAsyncImageLoader(): ImageLoader {
-    return { modifier, url, contentScale ->
+    return {
         AsyncImage(
-            modifier = modifier,
-            model = url,
+            modifier = it.modifier,
+            model = it.url,
             contentDescription = null,
-            contentScale = contentScale ?: ContentScale.Fit
+            contentScale = it.contentScale
         )
     }
 }
