@@ -17,46 +17,56 @@ coil glide와 같은 이미지 라이브러리를 설정
 implementation("io.coil-kt:coil-compose:2.6.0")
 ```
 
+## 구현 idea
+
+- PinchZoomBox 컴포넌트를 만든다.
+  - 화면 밖으로 어두운 배경에 줌한 이미지가 나오는 기능을 제공.
+  - 이미지 로더는 원하는 라이브러리를 사용할 수 있도록 하기
+  - zoom 상태값과 url만 flow 데이터로 받아 연동 할 수 있게 하기.
+  - Box안에 컨텐츠를 넣을 수 있도록 하기
+
+- [핀치 줌 기능 구현하기](/documents/pinchzoom.md)
+
 ## 사용법 (인스타그램 st 핀치 줌)
 
 ```
 @Composable
 fun PinchZoomImageBoxSample(modifier : Modifier = Modifier){
 
+    val imageUrls = listOf(
+        "http://sarang628.iptime.org:89/restaurant_images/278/2025-10-12/07_53_33_425.jpg%3ftype=w800",
+        "http://sarang628.iptime.org:89/restaurant_images/245/2025-10-12/01_18_37_646.jpg",
+        "http://sarang628.iptime.org:89/restaurant_images/244/2025-08-23/11_46_30_054.jpg",
+        "http://sarang628.iptime.org:89/restaurant_images/242/2025-05-03/02_34_45_987.jpeg",
+        "http://sarang628.iptime.org:89/restaurant_images/241/2025-05-03/02_32_41_199.jpeg",
+        "http://sarang628.iptime.org:89/restaurant_images/239/2025-05-03/02_30_21_802.jpg%3fw=500&h=500&org_if_sml=1",
+        "http://sarang628.iptime.org:89/restaurant_images/237/2025-05-03/10_54_53_555.jpg",
+        "http://sarang628.iptime.org:89/restaurant_images/236/2025-05-03/09_33_55_764.jpg"
+    )
+
     // Data shared between a zoomed image and the rest of the list when zooming.
     var zoomState by remember { mutableStateOf<PinchZoomState?>(null) }
 
     Log.d("__PinchZoomImageBoxSample", "recomposition")
 
-    // pinch zoom custom image loader
-    val pinchZoomImageLoader : PinchZoomImageLoader = @Composable {
-        AsyncImage(
-            modifier = it.modifier
-                .height(200.dp)
-                .pinchZoomAndTransform(zoomState) {
-                    zoomState = it // emit active zoom
-                },
-            model = it.model,
-            contentDescription = it.contentDescription
-        )
-    }
-
     PinchZoomImageBox(
-        modifier = modifier,
+        modifier        = modifier,
         activeZoomState = zoomState,
-        imageLoader = imageLoader
+        imageLoader     = imageLoader
     ){
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            // scrollEnabled는 derivedStateOf로 wrapping → recomposition 방지
-            userScrollEnabled = remember(zoomState) { zoomState == null }
+            userScrollEnabled   = remember(zoomState) { zoomState == null } // scrollEnabled는 derivedStateOf로 wrapping → recomposition 방지
         ) {
-            items(10) {
+            items(imageUrls.size) {
                 Column {
                     pinchZoomImageLoader(
+                        zoomState   = zoomState,
+                        onZoomState = { zoomState = it }
+                    ).invoke(
                         PunchZoomImageData(
-                            model = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhkYTY17vrtw3-dlooIu9n7R7mYFgOwyiCwEtJiFJTuxk4sOCKJ-OVaftSPKX7CfONCn2AMMV70TNP9qfo5avZBaMBn4BGS5DW6wPlbRY2ZZRgBXMEI5HbzduVdwj790uDattXfmQtkE8JJ_OptUUDFpCdJZWKVO_mOuL408H4svVQlt58TcjQe8JWfC5g/s1600/app-quality-performance-play-console-insights-meta.png",
-                            contentDescription = null
+                            model               = imageUrls[it],
+                            contentDescription  = null
                         )
                     )
                 }
@@ -77,33 +87,3 @@ fun PinchZoomImageBoxSample(modifier : Modifier = Modifier){
 
 ### PinchZoomImageBox
 - zoomState, 이미지 로더를 설정하면 바깥에 줌 이미지를 표시해 줌.
-
-
-```kotlin
-/**
- * 핀치줌 라이브라리 제공용 이미지 로더
- */
-fun coilAsyncImageLoader(): ImageLoader {
-    return { modifier, url, contentScale ->
-        AsyncImage(
-            modifier = modifier,
-            model = url,
-            contentDescription = null,
-            contentScale = contentScale ?: ContentScale.Fit
-        )
-    }
-}
-```
-
-### PinchZoomImageBox
-
-핀치줌 시 화면 밖에 확대된 이미지가 나오도록 해주는 Layout
-PinchZoomImageBox 호출 시 pinchZoomableImage, zoomState를 제공하는데 !!pinchZoomableImage!!로 이미지를 로드해야 함 주의.
-
-```kotlin
-PinchZoomImageBox(imageLoader = coilAsyncImageLoader())
-{ pinchZoomableImage, // 이 이미지 로더를 사용해서 이미지를 로드 해야. 줌 기능과 바깥에 이미지가 확대되는 기능이 적용됨.
-  zoomState ->
-
-}
-```
