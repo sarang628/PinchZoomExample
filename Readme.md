@@ -53,7 +53,7 @@ fun PinchZoomImageBoxSample(modifier : Modifier = Modifier){
         modifier        = modifier,
         activeZoomState = zoomState,
         imageLoader     = imageLoader
-    ){
+    ){  
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             userScrollEnabled   = remember(zoomState) { zoomState == null } // scrollEnabled는 derivedStateOf로 wrapping → recomposition 방지
