@@ -74,6 +74,20 @@ fun PinchZoomImageBoxSample(modifier : Modifier = Modifier){
         }
     }
 }
+
+// pinch zoom custom image loader
+fun pinchZoomImageLoader(
+    zoomState: PinchZoomState?,
+    onZoomState : (PinchZoomState?)->Unit  ={}
+) : PinchZoomImageLoader = @Composable { data ->
+    AsyncImage(
+        modifier = data.modifier
+            .height(200.dp)
+            .pinchZoomAndTransform(zoomState, onActiveZoom = { onZoomState(it?.copy(url = data.model)) }),
+        model = data.model,
+        contentDescription = data.contentDescription
+    )
+}
 ```
 
 ## 코드 설명
