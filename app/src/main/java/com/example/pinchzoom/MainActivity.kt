@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             PinchZoomTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                        PinchZoomImageBoxSample(modifier = Modifier.padding(innerPadding))
+                        PinchZoomImageBoxSample(modifier = Modifier.padding(innerPadding), showLog = true)
                 }
             }
         }
